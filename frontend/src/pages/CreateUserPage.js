@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 
 const CreateUserPage = () => {
@@ -7,7 +7,7 @@ const CreateUserPage = () => {
     name: '',
     username: '',
     password: '',
-    role: 'officer', // default role
+    role: 'officer',
   });
 
   const navigate = useNavigate();
@@ -21,7 +21,10 @@ const CreateUserPage = () => {
 
   const handleRegister = async () => {
     try {
-      await axios.post('http://localhost:5000/admin/users', formData); // Adjusted endpoint
+      const payload = { ...formData };
+      // Client-side safety: prevent creating admin via public register
+      if (payload.role === 'admin') payload.role = 'officer';
+      await api.post('/register', payload);
       alert('User created successfully!');
       navigate('/');
     } catch (err) {
@@ -82,11 +85,9 @@ const CreateUserPage = () => {
         </select>
       </div>
       <div className='d-flex'>
-
         <button className="btn btn-primary w-80 mb-2" onClick={handleRegister}>
           Register
         </button>
-
         <button className="btn btn-secondary w-80 mb-2 ms-auto" onClick={handleGoBack}>
           Back
         </button>
