@@ -12,6 +12,7 @@ const TranscriptionPage = () => {
   const [error, setError] = useState('');
   const [isSlow, setIsSlow] = useState(false);
   const slowTimerRef = useRef(null);
+  const recognizingRef = useRef(false);
 
   useEffect(() => {
     if (!SpeechRecognition) return;
@@ -27,27 +28,50 @@ const TranscriptionPage = () => {
       setTranscript(text);
     };
     rec.onerror = (e) => {
+      recognizingRef.current = false;
       setRecording(false);
       setError(`Speech recognition error: ${e?.error || 'unknown'}`);
+      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+      setIsSlow(false);
+    };
+    rec.onstart = () => {
+      recognizingRef.current = true;
+      setRecording(true);
+      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+      slowTimerRef.current = setTimeout(() => setIsSlow(true), 2000);
+    };
+    rec.onend = () => {
+      recognizingRef.current = false;
+      setRecording(false);
+      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+      setIsSlow(false);
     };
     setRecognition(rec);
+
+    return () => {
+      try { rec.stop(); } catch (_) {}
+      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+    };
   }, []);
 
   const startRecording = () => {
     if (!supported || !recognition) return;
+    if (recognizingRef.current) return;
     setError('');
-    setRecording(true);
-    recognition.start();
-    if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
-    slowTimerRef.current = setTimeout(() => setIsSlow(true), 2000);
+    try {
+      recognition.start();
+    } catch (e) {
+      if (e && e.name === 'InvalidStateError') {
+        return;
+      }
+      setError(`Speech recognition start failed: ${e?.message || e}`);
+    }
   };
 
   const stopRecording = () => {
     if (!supported || !recognition) return;
-    setRecording(false);
-    recognition.stop();
-    if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
-    setIsSlow(false);
+    if (!recognizingRef.current) return;
+    try { recognition.stop(); } catch (_) {}
   };
 
   const saveTranscript = async () => {
