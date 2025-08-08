@@ -1,0 +1,67 @@
+/* Global app styles */
+:root {
+  --page-max-width: 1100px;
+}
+
+.app-root {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 32px 20px;
+}
+
+.page-large .container,
+.page .container,
+.page-large .container-fluid,
+.page .container-fluid {
+  max-width: var(--page-max-width);
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* Buttons and inputs slightly larger for accessibility */
+button.btn, .form-control, .form-select {
+  font-size: 1rem;
+}
+
+/* Mic visualizer */
+.mic-visualizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 120px;
+  padding: 8px 6px;
+  background: #0b1324;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.mic-bar {
+  display: inline-block;
+  width: 8px;
+  background: linear-gradient(180deg, #4ade80, #22c55e 60%, #16a34a);
+  border-radius: 4px 4px 0 0;
+  transition: height 80ms linear;
+}
+
+/* Loading banner for slow network */
+.slow-banner {
+  background: #fff0c2;
+  color: #7a5d00;
+  border: 1px solid #ffe08a;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.error-banner {
+  background: #ffe4e6;
+  color: #b91c1c;
+  border: 1px solid #fecdd3;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
