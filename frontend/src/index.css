@@ -5,33 +5,22 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
   background-image: url('./assets/logo192.png');
   background-size: cover;
-  background-position: center;
+  /* background-position: center; */
   background-repeat: no-repeat;
 }
 h2, h3{
 
   font-weight:bolder;
 }
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-.root-p {
-  background-color: white;
-  padding: 50px;
-  opacity: 0.5;
-    display: flex;
+.flex{
+display: flex;
   align-items: center;
   justify-content: center;
-  height: 70%;
-  width: 50%;
-  position: absolute;
-  z-index: -1;
+  height: 100vh;
+}
+.code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
 }

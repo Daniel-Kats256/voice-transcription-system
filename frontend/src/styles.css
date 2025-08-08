@@ -3,10 +3,10 @@
   --page-max-width: 1100px;
 }
 
-.app-root {
+/* .app-root {
   min-height: 100vh;
   background: #f8fafc;
-}
+} */
 
 .page {
   min-height: 100vh;

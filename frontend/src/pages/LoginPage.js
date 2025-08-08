@@ -37,8 +37,9 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="page page-large container-fluid" style={{ maxWidth: '520px' }}>
-      <h2 className="mb-4 text-center page-title">Login</h2>
+   <div className='flex'>
+       <div className="container-fluid" style={{ maxWidth: '520px' }}>
+      <h2 className="mb-4 text-start page-title">Login</h2>
       {isSlow && (
         <div className="slow-banner mb-2">Login is taking longer than usual. Possible causes: slow network or server. Please wait…</div>
       )}
@@ -60,6 +61,7 @@ const LoginPage = () => {
         </button>
       </div>
     </div>
+   </div>
   );
 };
 export default LoginPage;
