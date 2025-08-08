@@ -5,18 +5,21 @@ import Dashboard from './pages/Dashboard';
 import TranscriptionPage from './pages/TranscriptionPage';
 import CreateUserPage from './pages/CreateUserPage';
 import AdminPage from './pages/AdminPage';
+import './styles.css';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/register" element={<CreateUserPage />} />
-        <Route path="/transcribe" element={<TranscriptionPage />} />
-        <Route path="/admin" element={<AdminPage />} />
-      </Routes>
-    </Router>
+    <div className="app-root">
+      <Router>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/register" element={<CreateUserPage />} />
+          <Route path="/transcribe" element={<TranscriptionPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 

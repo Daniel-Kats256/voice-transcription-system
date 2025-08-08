@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,8 +9,12 @@ const CreateUserPage = () => {
     password: '',
     role: 'officer',
   });
+  const [loading, setLoading] = useState(false);
+  const [isSlow, setIsSlow] = useState(false);
+  const [error, setError] = useState('');
 
   const navigate = useNavigate();
+  const slowTimerRef = useRef(null);
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -21,14 +25,21 @@ const CreateUserPage = () => {
 
   const handleRegister = async () => {
     try {
+      setLoading(true);
+      setError('');
       const payload = { ...formData };
-      // Client-side safety: prevent creating admin via public register
       if (payload.role === 'admin') payload.role = 'officer';
+      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+      slowTimerRef.current = setTimeout(() => setIsSlow(true), 2000);
       await api.post('/register', payload);
       alert('User created successfully!');
       navigate('/');
     } catch (err) {
-      alert('Registration failed: ' + (err.response?.data?.message || err.message));
+      setError('Registration failed: ' + (err.response?.data?.message || err.response?.data?.error || err.message));
+    } finally {
+      setLoading(false);
+      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+      setIsSlow(false);
     }
   };
 
@@ -37,8 +48,11 @@ const CreateUserPage = () => {
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: '400px' }}>
-      <h3 className="mb-4 text-center">Create Account</h3>
+    <div className="page page-large container-fluid" style={{ maxWidth: '600px' }}>
+      <h3 className="mb-4 text-center page-title">Create Account</h3>
+
+      {isSlow && <div className="slow-banner mb-2">Creating account is taking longer than usual. This might be due to network speed.</div>}
+      {error && <div className="error-banner mb-2">{error}</div>}
 
       <div className="form-group mb-3">
         <label>Name</label>
@@ -85,8 +99,8 @@ const CreateUserPage = () => {
         </select>
       </div>
       <div className='d-flex'>
-        <button className="btn btn-primary w-80 mb-2" onClick={handleRegister}>
-          Register
+        <button className="btn btn-primary w-80 mb-2" onClick={handleRegister} disabled={loading}>
+          {loading ? 'Registering…' : 'Register'}
         </button>
         <button className="btn btn-secondary w-80 mb-2 ms-auto" onClick={handleGoBack}>
           Back
