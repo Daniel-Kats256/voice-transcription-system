@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-//import './AdminPage.css'; // Optional external styles
+import api from '../api';
 
 const AdminPage = () => {
   const [users, setUsers] = useState([]);
@@ -15,7 +14,7 @@ const AdminPage = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/admin/users');
+      const res = await api.get('/admin/users');
       setUsers(res.data);
     } catch (err) {
       console.error('Failed to fetch users', err);
@@ -24,7 +23,7 @@ const AdminPage = () => {
 
   const fetchTranscripts = async (userId) => {
     try {
-      const res = await axios.get(`http://localhost:5000/transcripts/${userId}`);
+      const res = await api.get(`/transcripts/${userId}`);
       setTranscripts(prev => ({ ...prev, [userId]: res.data }));
       setSelectedUserId(userId);
     } catch (err) {
@@ -34,7 +33,7 @@ const AdminPage = () => {
 
   const handleAddUser = async () => {
     try {
-      await axios.post('http://localhost:5000/admin/users', formData);
+      await api.post('/admin/users', formData);
       setFormData({ name: '', username: '', password: '', role: 'officer' });
       fetchUsers();
     } catch (err) {
@@ -44,11 +43,18 @@ const AdminPage = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/admin/users/${id}`);
+      await api.delete(`/admin/users/${id}`);
       fetchUsers();
     } catch (err) {
       alert('Failed to delete user');
     }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('role');
+    window.location.href = '/';
   };
 
   useEffect(() => {
@@ -57,7 +63,10 @@ const AdminPage = () => {
 
   return (
     <div className="container mt-4">
-      <h2 className="text-center mb-4">Admin - User Management</h2>
+      <div className="d-flex justify-content-between align-items-center">
+        <h2 className="text-center mb-4">Admin - User Management</h2>
+        <button className="btn btn-outline-secondary" onClick={logout}>Logout</button>
+      </div>
 
       {/* Form Section */}
       <div className="card p-4 mb-4 shadow-sm">
