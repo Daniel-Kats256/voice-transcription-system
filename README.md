@@ -98,3 +98,37 @@ The backend includes the `jsonwebtoken` package, although the current endpoints 
 ## Notes
 - The visualizer requests microphone permission separately from the Web Speech API to compute audio levels. It is only used for on-device visualization and not uploaded.
 - If you deploy over HTTPS, ensure the site has secure context to access the microphone.
+
+## Admin Interface (NEW)
+
+The admin area now uses a dedicated sidebar for easy navigation:
+
+- Shows the **current admin name** (pulled from localStorage after login).
+- Quick links:
+  - **Add User** – create any role (admin/officer/deaf).
+  - **View Users** – list, delete users.
+  - **Add Transcript** – open the familiar transcription recorder.
+  - **View Transcripts** – pick any user and inspect their transcripts.
+
+The sidebar is implemented via `src/components/Sidebar.js` and rendered inside `AdminLayout` with React-Router v6 nested routes.
+
+```
+/admin          → sidebar + default route (View Users)
+/admin/add-user → AddUserPage
+/admin/view-users
+/admin/add-transcript
+/admin/view-transcripts
+```
+
+Regular users & officers do **not** see this layout; instead they continue to use the streamlined Dashboard.
+
+## Role-based Transcript Access (Backend)
+
+`GET /transcripts/:userId` now checks simple headers `x-role` and `x-user-id` to ensure:
+
+- Admins can request any `userId`.
+- Non-admins can only request their own `userId`.
+
+Front-end `axios` requests automatically attach these headers via `src/api.js`.
+
+> NOTE: This is **not** a full auth solution. For production you should switch to proper JWT sessions. The code is structured so JWT can be dropped in later with minimal changes.

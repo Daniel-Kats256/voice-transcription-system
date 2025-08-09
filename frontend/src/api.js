@@ -10,6 +10,11 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  // Pass role and userId for basic authorization checks on the server
+  const role = localStorage.getItem('role');
+  const userId = localStorage.getItem('userId');
+  if (role) config.headers['x-role'] = role;
+  if (userId) config.headers['x-user-id'] = userId;
   return config;
 });
 

@@ -28,7 +28,6 @@ const CreateUserPage = () => {
       setLoading(true);
       setError('');
       const payload = { ...formData };
-      if (payload.role === 'admin') payload.role = 'officer';
       if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
       slowTimerRef.current = setTimeout(() => setIsSlow(true), 2000);
       await api.post('/register', payload);
