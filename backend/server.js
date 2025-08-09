@@ -58,6 +58,14 @@ app.post('/transcripts', async (req, res) => {
 });
 
 app.get('/transcripts/:userId', async (req, res) => {
+  const requesterRole = req.headers['x-role'];
+  const requesterId = req.headers['x-user-id'];
+
+  // Authorization: allow if admin or requesting own transcripts
+  if (requesterRole !== 'admin' && requesterId !== req.params.userId) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
   try {
     const conn = await getConnection();
     const [rows] = await conn.execute('SELECT * FROM transcripts WHERE userId = ?', [req.params.userId]);

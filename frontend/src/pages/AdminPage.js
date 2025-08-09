@@ -80,6 +80,7 @@ const AdminPage = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('role');
+    localStorage.removeItem('name');
     window.location.href = '/';
   };
 

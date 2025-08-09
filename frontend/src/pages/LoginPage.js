@@ -24,6 +24,7 @@ const LoginPage = () => {
       if (token) localStorage.setItem('token', token);
       if (resolvedUser?.id) localStorage.setItem('userId', resolvedUser.id);
       if (resolvedUser?.role) localStorage.setItem('role', resolvedUser.role);
+      if (resolvedUser?.name) localStorage.setItem('name', resolvedUser.name);
       if (resolvedUser?.role === 'admin') navigate('/admin');
       else navigate('/dashboard');
     } catch (err) {

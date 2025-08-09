@@ -1,12 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 
 const Dashboard = () => {
   const [transcripts, setTranscripts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSlow, setIsSlow] = useState(false);
   const [error, setError] = useState('');
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [currentTranscript, setCurrentTranscript] = useState(null);
   const navigate = useNavigate();
   const slowTimerRef = useRef(null);
 
@@ -37,7 +42,18 @@ const Dashboard = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('role');
+    localStorage.removeItem('name');
     navigate('/');
+  };
+
+  const handleOpenModal = (transcript) => {
+    setCurrentTranscript(transcript);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setCurrentTranscript(null);
   };
 
   return (
@@ -57,12 +73,36 @@ const Dashboard = () => {
       ) : (
         <ul className="list-group">
           {transcripts.map((t, idx) => (
-            <li className="list-group-item" key={idx}>
-              <strong>{new Date(t.createdAt).toLocaleString()}:</strong> {t.content}
+            <li
+              role="button"
+              className="list-group-item d-flex justify-content-between align-items-center"
+              key={idx}
+              onClick={() => handleOpenModal(t)}
+            >
+              <span><strong>{new Date(t.createdAt).toLocaleString()}:</strong> {t.content.slice(0, 50)}{t.content.length > 50 ? '…' : ''}</span>
+              <span className="badge bg-primary">View</span>
             </li>
           ))}
         </ul>
       )}
+
+      {/* Transcript modal */}
+      <Modal show={showModal} onHide={handleCloseModal} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Transcript Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {currentTranscript ? (
+            <>
+              <p><strong>Date:</strong> {new Date(currentTranscript.createdAt).toLocaleString()}</p>
+              <p>{currentTranscript.content}</p>
+            </>
+          ) : null}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
