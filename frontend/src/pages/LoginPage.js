@@ -19,12 +19,13 @@ const LoginPage = () => {
     try {
       const res = await api.post('/login', { username, password });
       const { token, user, userId, role, name } = res.data;
-      // Normalize backend variations
       const resolvedUser = user || { id: userId, role: role, name };
       if (token) localStorage.setItem('token', token);
       if (resolvedUser?.id) localStorage.setItem('userId', resolvedUser.id);
       if (resolvedUser?.role) localStorage.setItem('role', resolvedUser.role);
+      if (resolvedUser?.name) localStorage.setItem('name', resolvedUser.name);
       if (resolvedUser?.role === 'admin') navigate('/admin');
+      else if (resolvedUser?.role === 'officer') navigate('/officer');
       else navigate('/dashboard');
     } catch (err) {
       const message = err.response?.data?.message || err.response?.data?.error || err.message || 'Login failed';
