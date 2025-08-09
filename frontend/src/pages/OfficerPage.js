@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
-import api from '../api';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api';
 import TranscriptModal from '../components/TranscriptModal';
 
-const Dashboard = () => {
+const OfficerPage = () => {
   const [transcripts, setTranscripts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSlow, setIsSlow] = useState(false);
@@ -12,12 +12,15 @@ const Dashboard = () => {
   const [search, setSearch] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
+  const [sort, setSort] = useState('desc');
   const navigate = useNavigate();
   const slowTimerRef = useRef(null);
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
+    const role = localStorage.getItem('role');
     if (!userId) return navigate('/');
+    if (role !== 'officer') return navigate('/dashboard');
 
     const fetchTranscripts = async () => {
       setLoading(true);
@@ -50,7 +53,7 @@ const Dashboard = () => {
     const lower = search.toLowerCase();
     const fromTime = from ? new Date(from).getTime() : null;
     const toTime = to ? new Date(to).getTime() : null;
-    return transcripts.filter(t => {
+    const data = transcripts.filter(t => {
       const content = String(t.content || '').toLowerCase();
       const created = new Date(t.createdAt).getTime();
       if (lower && !content.includes(lower)) return false;
@@ -58,21 +61,26 @@ const Dashboard = () => {
       if (toTime && created > toTime) return false;
       return true;
     });
-  }, [search, from, to, transcripts]);
+    return data.sort((a, b) => {
+      const A = new Date(a.createdAt).getTime();
+      const B = new Date(b.createdAt).getTime();
+      return sort === 'asc' ? A - B : B - A;
+    });
+  }, [search, from, to, sort, transcripts]);
 
   return (
     <div className="page page-large container-fluid">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="page-title">My Transcripts</h2>
+        <h2 className="page-title">Officer Workspace</h2>
         <button className="btn btn-outline-secondary" onClick={logout}>Logout</button>
       </div>
 
-      {isSlow && <div className="slow-banner mb-2">Loading your transcripts… This may be due to network slowness or server load.</div>}
+      {isSlow && <div className="slow-banner mb-2">Loading your transcripts…</div>}
       {error && <div className="error-banner mb-2">{error}</div>}
 
       <div className="card p-3 mb-3">
-        <div className="row g-2">
-          <div className="col-md-6">
+        <div className="row g-2 align-items-center">
+          <div className="col-md-4">
             <input className="form-control" placeholder="Search content" value={search} onChange={e => setSearch(e.target.value)} />
           </div>
           <div className="col-md-3">
@@ -81,10 +89,14 @@ const Dashboard = () => {
           <div className="col-md-3">
             <input type="date" className="form-control" value={to} onChange={e => setTo(e.target.value)} />
           </div>
+          <div className="col-md-2">
+            <select className="form-select" value={sort} onChange={e => setSort(e.target.value)}>
+              <option value="desc">Newest</option>
+              <option value="asc">Oldest</option>
+            </select>
+          </div>
         </div>
       </div>
-
-      <button className="btn btn-success mb-3" onClick={() => navigate('/transcribe')}>New Transcription</button>
 
       {loading ? (
         <div>Loading…</div>
@@ -93,13 +105,13 @@ const Dashboard = () => {
           {filtered.map((t, idx) => (
             <li className="list-group-item d-flex justify-content-between align-items-center" key={idx}>
               <div>
-                <strong>{new Date(t.createdAt).toLocaleString()}:</strong> {String(t.content).slice(0, 120)}{String(t.content).length > 120 ? '…' : ''}
+                <strong>{new Date(t.createdAt).toLocaleString()}:</strong> {String(t.content).slice(0, 160)}{String(t.content).length > 160 ? '…' : ''}
               </div>
               <button className="btn btn-sm btn-primary" onClick={() => setActiveTranscript(t)}>View</button>
             </li>
           ))}
           {filtered.length === 0 && (
-            <li className="list-group-item">No transcripts found.</li>
+            <li className="list-group-item">No transcripts match your filters.</li>
           )}
         </ul>
       )}
@@ -108,4 +120,5 @@ const Dashboard = () => {
     </div>
   );
 };
-export default Dashboard;
+
+export default OfficerPage;

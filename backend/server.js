@@ -4,6 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2/promise');
+const jwt = require('jsonwebtoken');
 
 dotenv.config();
 const app = express();
@@ -24,6 +25,31 @@ async function getConnection() {
   return await mysql.createConnection(dbConfig);
 }
 
+// Auth helpers
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_change_me';
+
+function authenticate(req, res, next) {
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ')
+    ? authHeader.slice('Bearer '.length)
+    : null;
+  if (!token) return res.status(401).json({ error: 'Missing auth token' });
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded; // { id, name, role }
+    return next();
+  } catch (e) {
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+}
+
+function requireAdmin(req, res, next) {
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  next();
+}
+
 // Authentication
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -35,20 +61,29 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     const { id, name, role } = rows[0];
-    res.json({ userId: id, name, role });
+    const token = jwt.sign({ id, name, role }, JWT_SECRET, { expiresIn: '12h' });
+    res.json({ token, user: { id, name, role } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+// Current user info
+app.get('/me', authenticate, async (req, res) => {
+  res.json({ user: req.user });
+});
+
 // CRUD: Transcripts
-app.post('/transcripts', async (req, res) => {
-  const { content, userId } = req.body;
+app.post('/transcripts', authenticate, async (req, res) => {
+  const isAdmin = req.user.role === 'admin';
+  const targetUserId = isAdmin && req.body.userId ? req.body.userId : req.user.id;
+  const { content } = req.body;
+  if (!content || !content.trim()) return res.status(400).json({ error: 'Content is required' });
   try {
     const conn = await getConnection();
     await conn.execute(
       'INSERT INTO transcripts (userId, content, createdAt) VALUES (?, ?, NOW())',
-      [userId, content]
+      [targetUserId, content]
     );
     await conn.end();
     res.status(201).json({ message: 'Transcript saved.' });
@@ -57,10 +92,32 @@ app.post('/transcripts', async (req, res) => {
   }
 });
 
-app.get('/transcripts/:userId', async (req, res) => {
+app.post('/admin/transcripts', authenticate, requireAdmin, async (req, res) => {
+  const { userId, content } = req.body;
+  if (!userId) return res.status(400).json({ error: 'userId is required' });
+  if (!content || !content.trim()) return res.status(400).json({ error: 'Content is required' });
   try {
     const conn = await getConnection();
-    const [rows] = await conn.execute('SELECT * FROM transcripts WHERE userId = ?', [req.params.userId]);
+    await conn.execute(
+      'INSERT INTO transcripts (userId, content, createdAt) VALUES (?, ?, NOW())',
+      [userId, content]
+    );
+    await conn.end();
+    res.status(201).json({ message: 'Transcript saved for user.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/transcripts/:userId', authenticate, async (req, res) => {
+  const requestedUserId = String(req.params.userId);
+  const isAdmin = req.user.role === 'admin';
+  if (!isAdmin && String(req.user.id) !== requestedUserId) {
+    return res.status(403).json({ error: 'Not authorized to view these transcripts' });
+  }
+  try {
+    const conn = await getConnection();
+    const [rows] = await conn.execute('SELECT * FROM transcripts WHERE userId = ?', [requestedUserId]);
     await conn.end();
     res.json(rows);
   } catch (err) {
@@ -69,10 +126,10 @@ app.get('/transcripts/:userId', async (req, res) => {
 });
 
 // Admin: Manage users
-app.get('/admin/users', async (req, res) => {
+app.get('/admin/users', authenticate, requireAdmin, async (req, res) => {
   try {
     const conn = await getConnection();
-    const [rows] = await conn.execute('SELECT * FROM users');
+    const [rows] = await conn.execute('SELECT id, name, username, role FROM users');
     await conn.end();
     res.json(rows);
   } catch (err) {
@@ -80,8 +137,11 @@ app.get('/admin/users', async (req, res) => {
   }
 });
 
-app.post('/admin/users', async (req, res) => {
+app.post('/admin/users', authenticate, requireAdmin, async (req, res) => {
   const { name, username, password, role } = req.body;
+  if (!name || !username || !password || !role) {
+    return res.status(400).json({ error: 'name, username, password, and role are required' });
+  }
   try {
     const conn = await getConnection();
     await conn.execute(
@@ -95,7 +155,7 @@ app.post('/admin/users', async (req, res) => {
   }
 });
 
-app.delete('/admin/users/:id', async (req, res) => {
+app.delete('/admin/users/:id', authenticate, requireAdmin, async (req, res) => {
   try {
     const conn = await getConnection();
     await conn.execute('DELETE FROM users WHERE id = ?', [req.params.id]);

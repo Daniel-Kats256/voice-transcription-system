@@ -1,39 +1,41 @@
 # Project Overview
 
-This project consists of a React frontend and a Node/Express backend with a MySQL database. Recent updates focus on UX improvements for audio capture and clearer error/latency feedback, while preserving the original database schema.
+This project consists of a React frontend and a Node/Express backend with a MySQL database. It now includes role-based access control (RBAC), an Admin sidebar layout, an Officer workspace, and transcript viewing via modals.
 
 ## What Was Added
 
-- Microphone visualizer (live equalizer) during transcription to show sound levels as audio is captured
-- Larger, single-page layouts with improved typography and spacing
-- Visible loading and error banners, including messages explaining delays (e.g., slow network, permission prompts)
-- Safer transcript saving (passes `userId` to backend as required)
-- Global request timeout and clearer timeout error message
-
-Databases and schema were not changed.
+- Admin Panel with left sidebar showing logged-in admin name and navigation:
+  - Add User
+  - View Users
+  - Add Transcript
+  - View Transcripts
+- Officer Page with enhanced transcript list (search, date filters, sorting)
+- Dashboard transcript list with search and a modal viewer
+- JWT-based authentication and authorization on the backend
+  - All protected API routes now require `Authorization: Bearer <token>`
+  - Admin-only routes guard user management and cross-user transcript access
 
 ## Tech Stack
-- Frontend: React (react-router), Axios, Bootstrap (classes used)
-- Backend: Node.js, Express, MySQL (mysql2)
+- Frontend: React (react-router), Axios, Bootstrap, React-Bootstrap (Modal)
+- Backend: Node.js, Express, MySQL (mysql2), jsonwebtoken
 
 ## Running Locally
 
 1. Backend
-   - Create a `.env` in `backend/` with your DB credentials:
+   - Create a `.env` in `backend/` with your DB credentials and JWT secret:
      ```
      DB_HOST=localhost
      DB_USER=your_mysql_user
      DB_PASS=your_mysql_password
      DB_NAME=your_db_name
      PORT=5000
-     # Optional (see JWT section below)
-     JWT_SECRET=change_me
+     JWT_SECRET=change_me_to_a_strong_secret
      ```
    - Install and start:
      ```bash
      cd backend
      npm install
-     node server.js
+     npm run dev # or: npm start
      ```
 
 2. Frontend
@@ -48,53 +50,53 @@ Databases and schema were not changed.
      npm start
      ```
 
-## New UX Details
+## Roles and Permissions
 
-- Transcription page now displays:
-  - A live microphone equalizer while recording (requires microphone permission)
-  - Slow-operation banner if initialization or saving takes more than ~2s
-  - Error messages for speech recognition or microphone permission issues
+- Admin
+  - Can add, view, and delete users
+  - Can add transcripts for any user
+  - Can view transcripts for any user
+- Officer
+  - Can only view their own transcripts
+- Deaf/User
+  - Can only view their own transcripts
 
-- Login, Dashboard, and Admin pages show:
-  - Loading states for network requests
-  - "Taking longer than usual" banners for slow responses
-  - Clear error banners when requests fail
+The UI enforces these constraints and the backend verifies them.
 
-## JWT Secret (How to Create)
+## Endpoints (Summary)
 
-The backend includes the `jsonwebtoken` package, although the current endpoints do not require a token. If you want to enable JWT in the future, create a strong secret and add it to the backend `.env` as `JWT_SECRET`.
+- Auth
+  - `POST /login` → `{ token, user: { id, name, role } }`
+  - `GET /me` (auth) → `{ user }`
+- Transcripts
+  - `POST /transcripts` (auth) → save for self; admins may pass `userId` to save for others
+  - `POST /admin/transcripts` (admin) → save for specified `userId`
+  - `GET /transcripts/:userId` (auth) → self-only; admin can access any
+- Users (admin)
+  - `GET /admin/users`
+  - `POST /admin/users`
+  - `DELETE /admin/users/:id`
 
-- Generate a secure secret:
-  ```bash
-  # Option A (base64):
-  openssl rand -base64 32
+## Frontend Navigation
 
-  # Option B (hex):
-  openssl rand -hex 32
-  ```
+- Login stores token, `userId`, `role`, and `name` in `localStorage`
+- Redirects:
+  - Admin → `/admin`
+  - Officer → `/officer`
+  - Others → `/dashboard`
 
-- Put it in `backend/.env`:
-  ```
-  JWT_SECRET=paste_generated_secret_here
-  ```
+## Transcript Modal
 
-- Frontend will automatically attach `Authorization: Bearer <token>` if you store `token` in `localStorage`. If you later update the backend to issue/verify JWTs, ensure the login endpoint returns `{ token, user: { id, role, name } }`.
-
-## Files Touched
-
-- Frontend
-  - `src/components/MicVisualizer.js` (new): Web Audio API visualizer
-  - `src/styles.css` (new): Layout/typography/visualizer styles
-  - `src/App.js`: Import global styles and wrap in root container
-  - `src/pages/TranscriptionPage.js`: Visualizer, delay/error banners, send `userId` when saving
-  - `src/pages/LoginPage.js`: Loading/slow/error states
-  - `src/pages/Dashboard.js`: Loading/slow/error states
-  - `src/pages/CreateUserPage.js`: Larger layout, slow/error states
-  - `src/pages/AdminPage.js`: Loading/slow/error states for users and transcripts
-
-- Backend
-  - No schema changes. Endpoints unchanged.
+- Reusable component at `src/components/TranscriptModal.js`
+- Used on Dashboard, Officer page, and inside Admin pages
 
 ## Notes
-- The visualizer requests microphone permission separately from the Web Speech API to compute audio levels. It is only used for on-device visualization and not uploaded.
-- If you deploy over HTTPS, ensure the site has secure context to access the microphone.
+
+- Ensure the database has `users` and `transcripts` tables. Expected fields:
+  - `users(id, name, username, password, role)`
+  - `transcripts(id, userId, content, createdAt)`
+- For production, use hashed passwords and HTTPS. Current code compares plaintext passwords and is intended for demo/dev.
+- Generate a strong JWT secret:
+  ```bash
+  openssl rand -base64 32
+  ```
