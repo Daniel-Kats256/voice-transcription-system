@@ -61,11 +61,11 @@ const LoginPage = () => {
         <div className="error-banner mb-2">{error}</div>
       )}
       <div className="mb-3">
-        <label><h3>Username</h3></label>
+        <label><h4>Username</h4></label>
         <input className="form-control" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
       </div>
       <div className="mb-3">
-        <label><h3>Password</h3></label>
+        <label><h4>Password</h4></label>
         <input type="password" className="form-control" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
       </div>
       <div className="d-flex gap-2">
