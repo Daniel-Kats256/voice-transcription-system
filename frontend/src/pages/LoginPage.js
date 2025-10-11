@@ -55,7 +55,7 @@ const LoginPage = () => {
         className="container-fluid shadow-sm p-5 mb-4 rounded"
         style={{
           maxWidth: '520px',
-          backgroundColor: 'rgba(0, 123, 255, 0.3)'
+          backgroundColor: 'rgba(255, 255, 255, 0.3)'
         }}
       >
         <h2 className="mb-4 text-center page-title">Login</h2>
