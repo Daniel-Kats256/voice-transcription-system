@@ -47,7 +47,7 @@ const CreateUserPage = () => {
   };
 
   return (
-    <div className="page page-large container-fluid" style={{ maxWidth: '600px' }}>
+    <div className="page page-large container-fluid" style={{ maxWidth: '600px', backgroundColor: 'rgba(255, 255, 255, 0.3)' }}>
       <h3 className="mb-4 text-center page-title">Create Account</h3>
 
       {isSlow && <div className="slow-banner mb-2">Creating account is taking longer than usual. This might be due to network speed.</div>}
