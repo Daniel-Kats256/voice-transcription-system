@@ -50,13 +50,12 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div className="d-flex justify-content-center align-items-center vh-100">
       <div
         className="container-fluid shadow-sm p-5 mb-4 rounded"
         style={{
           maxWidth: '520px',
-          backgroundColor: 'rgba(0, 123, 255, 0.3)',
-          backdropFilter: 'blur(6px)', // nice frosted-glass look
+          backgroundColor: 'rgba(0, 123, 255, 0.3)'
         }}
       >
         <h2 className="mb-4 text-center page-title">Login</h2>
