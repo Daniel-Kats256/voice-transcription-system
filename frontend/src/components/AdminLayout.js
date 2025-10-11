@@ -1,19 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import { Outlet } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
 
-/**
- * AdminLayout - generic layout for all admin-related pages.
- * Renders a permanent sidebar on the left and the selected child route on the right.
- */
 const AdminLayout = () => {
-  return (
-    <div className="d-flex">
-      {/* Sidebar */}
-      <Sidebar />
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
-      {/* Main content area */}
-      <div className="flex-grow-1 p-4" style={{ overflowY: 'auto' }}>
+  const toggleSidebar = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
+  return (
+    <div className="d-flex flex-column flex-md-row vh-100">
+      {/* Sidebar */}
+      <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
+
+      {/* Main Content */}
+      <div className="flex-grow-1 p-4 bg-light" style={{ overflowY: 'auto' }}>
+        {/* Mobile Toggle Button */}
+        <div className="d-md-none mb-3">
+          <Button variant="primary" onClick={toggleSidebar}>
+            {isCollapsed ? '☰ Menu' : '✖ Close'}
+          </Button>
+        </div>
+
         <Outlet />
       </div>
     </div>
