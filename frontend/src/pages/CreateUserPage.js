@@ -30,7 +30,7 @@ const CreateUserPage = () => {
       const payload = { ...formData };
       if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
       slowTimerRef.current = setTimeout(() => setIsSlow(true), 2000);
-      await api.post('/register', payload);
+      await api.post('/admin/users', payload);
       alert('User created successfully!');
       navigate('/');
     } catch (err) {

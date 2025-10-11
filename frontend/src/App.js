@@ -11,6 +11,7 @@ import AddUserPage from './pages/AddUserPage';
 import ViewUsersPage from './pages/ViewUsersPage';
 import AddTranscriptPage from './pages/AddTranscriptPage';
 import ViewTranscriptsPage from './pages/ViewTranscriptsPage';
+import DeafDashboard from './pages/DeafDashboard';
 import './styles.css';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/register" element={<CreateUserPage />} />
           <Route path="/transcribe" element={<TranscriptionPage />} />
+          <Route path="/deaf" element={<DeafDashboard />} />
 
           {/* Admin routes with sidebar layout */}
           <Route path="/admin" element={<AdminLayout />}>

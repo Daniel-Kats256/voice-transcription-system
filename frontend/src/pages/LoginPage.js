@@ -11,31 +11,44 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const slowTimerRef = useRef(null);
 
-  const handleLogin = async () => {
-    setLoading(true);
-    setError('');
-    if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
-    slowTimerRef.current = setTimeout(() => setIsSlow(true), 2000);
-    try {
-      const res = await api.post('/login', { username, password });
-      const { token, user, userId, role, name } = res.data;
-      // Normalize backend variations
-      const resolvedUser = user || { id: userId, role: role, name };
-      if (token) localStorage.setItem('token', token);
-      if (resolvedUser?.id) localStorage.setItem('userId', resolvedUser.id);
-      if (resolvedUser?.role) localStorage.setItem('role', resolvedUser.role);
-      if (resolvedUser?.name) localStorage.setItem('name', resolvedUser.name);
-      if (resolvedUser?.role === 'admin') navigate('/admin');
-      else navigate('/dashboard');
-    } catch (err) {
-      const message = err.response?.data?.message || err.response?.data?.error || err.message || 'Login failed';
-      setError(message);
-    } finally {
-      setLoading(false);
-      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
-      setIsSlow(false);
+ const handleLogin = async () => {
+  setLoading(true);
+  setError('');
+  if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+  slowTimerRef.current = setTimeout(() => setIsSlow(true), 2000);
+
+  try {
+    const res = await api.post('/login', { username, password });
+    const { token, user, userId, role, name } = res.data;
+
+    // Normalize backend variations
+    const resolvedUser = user || { id: userId, role: role, name };
+
+    // Store session data
+    if (token) localStorage.setItem('token', token);
+    if (resolvedUser?.id) localStorage.setItem('userId', resolvedUser.id);
+    if (resolvedUser?.role) localStorage.setItem('role', resolvedUser.role);
+    if (resolvedUser?.name) localStorage.setItem('name', resolvedUser.name);
+
+    // ✅ Route based on role
+    if (resolvedUser?.role === 'admin') {
+      navigate('/admin');
+    } else if (resolvedUser?.role === 'deaf') {
+      navigate('/deaf');
+    } else {
+      navigate('/dashboard');
     }
-  };
+
+  } catch (err) {
+    const message = err.response?.data?.message || err.response?.data?.error || err.message || 'Login failed';
+    setError(message);
+  } finally {
+    setLoading(false);
+    if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+    setIsSlow(false);
+  }
+};
+
 
   return (
    <div className='flex'>
@@ -48,9 +61,11 @@ const LoginPage = () => {
         <div className="error-banner mb-2">{error}</div>
       )}
       <div className="mb-3">
+        <label>Username</label>
         <input className="form-control" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
       </div>
       <div className="mb-3">
+        <label>Password</label>
         <input type="password" className="form-control" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
       </div>
       <div className="d-flex gap-2">

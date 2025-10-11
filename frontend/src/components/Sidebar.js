@@ -4,6 +4,13 @@ import { NavLink } from 'react-router-dom';
 const Sidebar = () => {
   // Retrieve logged in user info from localStorage (simple client-side session)
   const adminName = localStorage.getItem('name') || 'Admin';
+   const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('role');
+    localStorage.removeItem('name');
+    window.location.href = '/';
+  };
 
   return (
     <div className="sidebar d-flex flex-column p-3 text-bg-dark" style={{ minHeight: '100vh', width: '250px' }}>
@@ -16,6 +23,7 @@ const Sidebar = () => {
         <NavLink to="add-transcript" className={({ isActive }) => 'nav-link ' + (isActive ? 'active' : 'text-white')}>Add Transcript</NavLink>
         <NavLink to="view-transcripts" className={({ isActive }) => 'nav-link ' + (isActive ? 'active' : 'text-white')}>View Transcripts</NavLink>
       </nav>
+       <button className="btn btn-outline-secondary" onClick={logout}>Logout</button>
     </div>
   );
 };

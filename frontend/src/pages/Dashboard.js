@@ -45,6 +45,7 @@ const Dashboard = () => {
     localStorage.removeItem('name');
     navigate('/');
   };
+const userName = localStorage.getItem('name') || 'User';
 
   const handleOpenModal = (transcript) => {
     setCurrentTranscript(transcript);
@@ -59,7 +60,8 @@ const Dashboard = () => {
   return (
     <div className="page page-large container-fluid">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="page-title">Dashboard</h2>
+        {/* <h2 className="page-title">Dashboard</h2> */}
+         <h2 className="mb-4">Hello {userName}, click the button to start Transcription.</h2>
         <button className="btn btn-outline-secondary" onClick={logout}>Logout</button>
       </div>
 
@@ -80,7 +82,7 @@ const Dashboard = () => {
               onClick={() => handleOpenModal(t)}
             >
               <span><strong>{new Date(t.createdAt).toLocaleString()}:</strong> {t.content.slice(0, 50)}{t.content.length > 50 ? '…' : ''}</span>
-              <span className="badge bg-primary">View</span>
+              <span className="badge bg-primary">View Transcription</span>
             </li>
           ))}
         </ul>
