@@ -53,7 +53,7 @@ const LoginPage = () => {
   return (
    <div className='flex'>
        <div className="container-fluid shadow-sm p-4 mb-4 bg-white rounded" style={{ maxWidth: '520px' }}>
-      <h2 className="mb-4 text-start page-title">Login</h2>
+      <h2 className="mb-4 text-center page-title">Login</h2>
       {isSlow && (
         <div className="slow-banner mb-2">Login is taking longer than usual. Possible causes: slow network or server. Please wait…</div>
       )}
@@ -61,11 +61,11 @@ const LoginPage = () => {
         <div className="error-banner mb-2">{error}</div>
       )}
       <div className="mb-3">
-        <label>Username</label>
+        <label><h3>Username</h3></label>
         <input className="form-control" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
       </div>
       <div className="mb-3">
-        <label>Password</label>
+        <label><h3>Password</h3></label>
         <input type="password" className="form-control" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
       </div>
       <div className="d-flex gap-2">
