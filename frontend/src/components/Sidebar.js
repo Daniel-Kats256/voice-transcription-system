@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 
-const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const Sidebar = ({ isOpen, toggleSidebar }) => {
   const adminName = localStorage.getItem('name') || 'Admin';
-
-  const toggleSidebar = () => setIsOpen(!isOpen);
 
   const logout = () => {
     localStorage.removeItem('token');
@@ -18,20 +15,9 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile Toggle Button */}
-      <div className="d-md-none p-2 bg-dark text-white">
-        <Button
-          variant="outline-light"
-          size="sm"
-          onClick={toggleSidebar}
-        >
-          {isOpen ? '✖ Close Menu' : '☰ Menu'}
-        </Button>
-      </div>
-
       {/* Sidebar Container */}
       <div
-        className={`sidebar d-flex flex-column p-3 text-bg-dark transition-all position-fixed h-100`}
+        className={`sidebar bg-dark text-white d-flex flex-column p-3 position-fixed h-100`}
         style={{
           width: isOpen ? '250px' : '0',
           overflow: 'hidden',
@@ -39,14 +25,25 @@ const Sidebar = () => {
           zIndex: 1040,
         }}
       >
-        <h4 className="mb-4 mt-3">{adminName}</h4>
+        {/* Sidebar Header */}
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h4 className="mb-0">{adminName}</h4>
+          <Button
+            variant="outline-light"
+            size="sm"
+            className="d-md-none"
+            onClick={toggleSidebar}
+          >
+            ✖
+          </Button>
+        </div>
 
         {/* Navigation Links */}
         <nav className="nav nav-pills flex-column gap-2">
           <NavLink
             to="add-user"
             className={({ isActive }) =>
-              'nav-link ' + (isActive ? 'active' : 'text-white')
+              'nav-link ' + (isActive ? 'active bg-light text-dark' : 'text-white')
             }
           >
             Add User
@@ -54,7 +51,7 @@ const Sidebar = () => {
           <NavLink
             to="view-users"
             className={({ isActive }) =>
-              'nav-link ' + (isActive ? 'active' : 'text-white')
+              'nav-link ' + (isActive ? 'active bg-light text-dark' : 'text-white')
             }
           >
             View Users
@@ -62,7 +59,7 @@ const Sidebar = () => {
           <NavLink
             to="add-transcript"
             className={({ isActive }) =>
-              'nav-link ' + (isActive ? 'active' : 'text-white')
+              'nav-link ' + (isActive ? 'active bg-light text-dark' : 'text-white')
             }
           >
             Add Transcript
@@ -70,14 +67,18 @@ const Sidebar = () => {
           <NavLink
             to="view-transcripts"
             className={({ isActive }) =>
-              'nav-link ' + (isActive ? 'active' : 'text-white')
+              'nav-link ' + (isActive ? 'active bg-light text-dark' : 'text-white')
             }
           >
             View Transcripts
           </NavLink>
         </nav>
 
-        <button className="btn btn-outline-secondary mt-auto" onClick={logout}>
+        {/* Logout Button */}
+        <button
+          className="btn btn-outline-light mt-auto w-100"
+          onClick={logout}
+        >
           Logout
         </button>
       </div>
