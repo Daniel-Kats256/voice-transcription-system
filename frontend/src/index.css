@@ -25,14 +25,17 @@ display: flex;
     monospace;
 }
 
-/* Smooth transition */
+
 .transition-all {
   transition: all 0.3s ease-in-out;
 }
 
-/* Sidebar link hover */
-.nav-link:hover {
+.nav-link.active {
+  background-color: #0d6efd !important;
+}
+
+.sidebar .nav-link:hover {
   background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
+    border-radius: 5px;
 }
 
