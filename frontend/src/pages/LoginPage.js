@@ -52,7 +52,7 @@ const LoginPage = () => {
 
   return (
    <div className='flex'>
-       <div className="container-fluid shadow-sm p-4 mb-4 bg-white rounded" style={{ maxWidth: '520px' }}>
+       <div className="container-fluid shadow-sm p-5 mb-4 rounded" style={{ maxWidth: '520px', background-color: rgba(0, 123, 255, 0.5); }}>
       <h2 className="mb-4 text-center page-title">Login</h2>
       {isSlow && (
         <div className="slow-banner mb-2">Login is taking longer than usual. Possible causes: slow network or server. Please wait…</div>
