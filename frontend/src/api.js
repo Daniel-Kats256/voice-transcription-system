@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000',
+  baseURL: process.env.REACT_APP_API_BASE_URL || 'https://voice-transcription-system.onrender.com',
   timeout: 15000,
 });
 
