@@ -24,3 +24,15 @@ display: flex;
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Smooth transition */
+.transition-all {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Sidebar link hover */
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+}
+
