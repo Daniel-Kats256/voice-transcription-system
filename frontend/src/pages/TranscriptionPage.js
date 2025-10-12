@@ -112,7 +112,7 @@ const TranscriptionPage = () => {
 
   return (
     <div className="page page-large container-fluid" style={{
-             backgroundColor: 'rgba(255, 255, 255, 0.3)'
+             backGroundColor: 'rgba(255, 255, 255, 0.3)'
         }} >
       <h2 className="page-title mb-3">Transcription</h2>
       {!supported && (
