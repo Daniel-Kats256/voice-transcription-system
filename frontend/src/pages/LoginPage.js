@@ -55,9 +55,10 @@ const LoginPage = () => {
         className="container-fluid shadow-sm p-5 mb-4 rounded"
         style={{
           maxWidth: '520px',
-          backgroundColor: 'rgba(255, 255, 255, 0.3)'
+          backgroundColor: 'rgba(255, 255, 255, 0.5)'
         }}
       >
+        <h1 className="mb-4 text-center page-title">Trans-VoiceBridge</h1>
         <h2 className="mb-4 text-center page-title">Login</h2>
 
         {isSlow && (
@@ -99,6 +100,9 @@ const LoginPage = () => {
             Create Account
           </button>
         </div>
+            <div class="mt-4 text-center text-muted small">
+              Trans-VoiceBridge – connecting speech to understanding. After registration, login with your credentials and enjoy seamless voice-to-text flow & vice-verser.
+            </div>
       </div>
     </div>
   );
