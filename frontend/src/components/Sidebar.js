@@ -1,8 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Button } from 'react-bootstrap';
 
-const Sidebar = () => {
+const Sidebar = ({ closeSidebar }) => {
   const adminName = localStorage.getItem('name') || 'Admin';
 
   const logout = () => {
@@ -14,50 +13,43 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="d-flex flex-column p-3 h-100">
-      <h4 className="text-white mb-4">{adminName}</h4>
+    <div>
+      <h4 className="mb-4">{adminName}</h4>
 
-      <nav className="nav nav-pills flex-column gap-2 mb-auto">
+      <nav className="nav flex-column gap-2">
         <NavLink
           to="add-user"
-          className={({ isActive }) =>
-            'nav-link ' + (isActive ? 'active bg-primary' : 'text-white')
-          }
+          className={({ isActive }) => 'nav-link ' + (isActive ? 'active' : 'text-white')}
+          onClick={closeSidebar}
         >
           Add User
         </NavLink>
-
         <NavLink
           to="view-users"
-          className={({ isActive }) =>
-            'nav-link ' + (isActive ? 'active bg-primary' : 'text-white')
-          }
+          className={({ isActive }) => 'nav-link ' + (isActive ? 'active' : 'text-white')}
+          onClick={closeSidebar}
         >
           View Users
         </NavLink>
-
         <NavLink
           to="add-transcript"
-          className={({ isActive }) =>
-            'nav-link ' + (isActive ? 'active bg-primary' : 'text-white')
-          }
+          className={({ isActive }) => 'nav-link ' + (isActive ? 'active' : 'text-white')}
+          onClick={closeSidebar}
         >
           Add Transcript
         </NavLink>
-
         <NavLink
           to="view-transcripts"
-          className={({ isActive }) =>
-            'nav-link ' + (isActive ? 'active bg-primary' : 'text-white')
-          }
+          className={({ isActive }) => 'nav-link ' + (isActive ? 'active' : 'text-white')}
+          onClick={closeSidebar}
         >
           View Transcripts
         </NavLink>
       </nav>
 
-      <Button variant="outline-light" onClick={logout}>
+      <button className="btn btn-outline-light mt-4 w-100" onClick={logout}>
         Logout
-      </Button>
+      </button>
     </div>
   );
 };
