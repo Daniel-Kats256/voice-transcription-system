@@ -33,7 +33,7 @@ const AdminLayout = () => {
           {/* Mobile Toggle Button */}
           <div className="d-md-none mb-3">
             <Button variant="primary" onClick={toggleSidebar}>
-              {isCollapsed ? '☰ Menu' : '✖ Close'}
+              {isCollapsed ? '✖ Close' : '☰ Menu'}
             </Button>
           </div>
 
