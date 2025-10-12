@@ -16,7 +16,7 @@ import './styles.css';
 
 function App() {
   return (
-    <div className="app-root">
+    <div className="app-root" style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)' }}>
       <Router>
         <Routes>
           <Route path="/" element={<LoginPage />} />
