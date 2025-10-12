@@ -17,7 +17,7 @@ const AdminLayout = () => {
           md={3}
           lg={2}
           className={`bg-dark text-white sidebar-column ${
-            isCollapsed ? 'd-none' : 'd-block'
+            isCollapsed ? 'd-block' : 'd-none'
           } d-md-block`}
           style={{
             transition: 'all 0.3s ease-in-out',
