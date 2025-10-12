@@ -72,7 +72,7 @@ const DeafDashboard = () => {
 
   return (
     <div className="page page-large container-fluid">
-      <h2 className="page-title mb-3">Voice Communication (Deaf User)</h2>
+      <h2 className="page-title mb-3">Hello {userName}, please type for Voice Communication (Deaf User)</h2>
 
       {isSlow && (
         <div className="slow-banner mb-2">This is taking longer than usual. Please wait...</div>
