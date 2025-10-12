@@ -69,6 +69,7 @@ const DeafDashboard = () => {
   const handleGoBack = () => {
     navigate(-1);
   };
+  const userName = localStorage.getItem('name') || 'User';
 
   return (
     <div className="page page-large container-fluid">
